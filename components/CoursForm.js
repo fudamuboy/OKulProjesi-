@@ -53,15 +53,17 @@ export default function CoursForm({ cancelHandler, onSubmit, buttonLabel, defaul
                 <Input
                     style={styles.flexAll}
                     label="Tutar"
+                    invalid={!inputs.amount.isValid}
                     textInputConfig={{
                         keyboardType: 'decimal-pad',
                         onChangeText: inputChange.bind(this, 'amount'),
-                        value: inputs.amount.value,
+                        value: inputs.amount.value.toString()
                     }}
                 />
                 <Input
                     style={styles.flexAll}
                     label="Tarih"
+                    invalid={!inputs.date.isValid}
                     textInputConfig={{
                         placeholder: 'YYYY-MM-DD',
                         maxLength: 10,
@@ -73,12 +75,30 @@ export default function CoursForm({ cancelHandler, onSubmit, buttonLabel, defaul
 
             <Input
                 label="Başlık Bilgisi"
+                invalid={!inputs.description.isValid}
                 textInputConfig={{
                     multiline: true,
                     onChangeText: inputChange.bind(this, 'description'),
                     value: inputs.description.value,
                 }}
             />
+            <View style={styles.error}>
+                {!inputs.amount.isValid && (
+                    <Text>
+                        Luften tutari dogru formatta giriniz
+                    </Text>
+                )}
+                {!inputs.date.isValid && (
+                    <Text>
+                        Luften tutari dogru formatta giriniz
+                    </Text>
+                )}
+                {!inputs.description.isValid && (
+                    <Text>
+                        Luften tutari dogru formatta giriniz
+                    </Text>
+                )}
+            </View>
             <View style={styles.buttonsContainer}>
                 <Pressable onPress={cancelHandler}>
                     <View style={styles.cancel}>
@@ -140,5 +160,10 @@ const styles = StyleSheet.create({
     },
     textAdd: {
         color: 'white',
+    },
+    error: {
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 10,
     },
 });
