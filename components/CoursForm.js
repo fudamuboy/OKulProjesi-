@@ -90,12 +90,12 @@ export default function CoursForm({ cancelHandler, onSubmit, buttonLabel, defaul
                 )}
                 {!inputs.date.isValid && (
                     <Text>
-                        Luften tutari dogru formatta giriniz
+                        Luften tarihi dogru formatta giriniz
                     </Text>
                 )}
                 {!inputs.description.isValid && (
                     <Text>
-                        Luften tutari dogru formatta giriniz
+                        Luften basligi dogru formatta giriniz
                     </Text>
                 )}
             </View>

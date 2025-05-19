@@ -61,7 +61,7 @@ export const CoursesContext = createContext({
     courses: [],
     addCourse: ({ description, amount, date }) => { },
     deleteCourse: (id) => { },
-    // setCourse: (courses) => { },
+    setCourse: (courses) => { },
     updateCourse: (id, { description, amount, date }) => { },
 })
 
@@ -73,7 +73,9 @@ function coursesReducer(state, action) {
 
         case 'DELETE':
             return state.filter((course) => course.id !== action.payload)
-
+        case 'SET':
+            const reverseData = action.payload.reverse() //reverse fait l'inverse ds l'affichage
+            return reverseData
         case 'UPDATE':
             const updatableCourseIndex = state.findIndex(
                 (course) => course.id === action.payload.id
@@ -92,13 +94,16 @@ function coursesReducer(state, action) {
 
 function CoursesContextProvider({ children }) {
 
-    const [coursesState, dispatch] = useReducer(coursesReducer, COURSES)
+    const [coursesState, dispatch] = useReducer(coursesReducer, [])
 
     function addCourse(courseData) {
         dispatch({ type: 'ADD', payload: courseData })
     }
     function deleteCourse(id) {
         dispatch({ type: 'DELETE', payload: id })
+    }
+    function setCourse(courses) {
+        dispatch({ type: 'SET', payload: courses })
     }
     function updateCourse(id, courseData) {
         dispatch({ type: 'UPDATE', payload: { id: id, data: courseData } })
@@ -107,7 +112,7 @@ function CoursesContextProvider({ children }) {
         courses: coursesState,
         addCourse: addCourse,
         deleteCourse: deleteCourse,
-        // setCourse: setCourse,
+        setCourse: setCourse,
         updateCourse: updateCourse
     }
 

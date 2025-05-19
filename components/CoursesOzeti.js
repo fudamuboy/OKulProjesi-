@@ -26,10 +26,12 @@ const styles = StyleSheet.create({
         padding: 8,
         borderRadius: 12,
 
+
     },
     title: {
         color: 'white',
         fontSize: 12,
+        fontSize: 15,
 
     },
     cost: {

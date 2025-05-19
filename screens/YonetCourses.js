@@ -1,13 +1,16 @@
 import { Pressable, StyleSheet, Text, View, Alert } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { useLayoutEffect } from 'react'
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { useContext } from 'react'
 import { CoursesContext } from '../store/coursesContext'
 import CoursForm from '../components/CoursForm';
+import { deleteCourseHttp, storeCourse, updateCourseHttp } from '../helper/http';
+import { usePreventRemove } from '@react-navigation/native';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function YonetCourses({ route, navigation }) {
-
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const coursesContext = useContext(CoursesContext)
 
     const coursId = route.params?.coursId
@@ -29,7 +32,7 @@ export default function YonetCourses({ route, navigation }) {
 
     const buttonLabel = isEditing ? 'Guncelle' : 'Ekle';
     // function retour en arriere
-    function deleteCourse() {
+    async function deleteCourse() {
         // Alert.alert(
         //     "Kursu Sil",
         //     "Bu kursu silmek istediğinizden emin misiniz?",
@@ -53,23 +56,31 @@ export default function YonetCourses({ route, navigation }) {
         //         }
         //     ]
         // )
+        setIsSubmitting(true)
         coursesContext.deleteCourse(coursId)
         Alert.alert("Başarılı", "Kayıt silindi")
         navigation.goBack()
+        await deleteCourseHttp(coursId)
     }
     function cancelHandler() {
         navigation.goBack()
     }
 
-    function addOrUpdateHandler(courseData) {
+    async function addOrUpdateHandler(courseData) {
+        setIsSubmitting(true)
         if (isEditing) {
             coursesContext.updateCourse(coursId, courseData)
+            await updateCourseHttp(coursId, courseData)
 
         }
         else {
-            coursesContext.addCourse(courseData)
+            const id = await storeCourse(courseData)
+            coursesContext.addCourse({ ...courseData, id: id })
         }
         navigation.goBack()
+    }
+    if (isSubmitting) {
+        return <LoadingSpinner />
     }
 
     return (
@@ -79,6 +90,7 @@ export default function YonetCourses({ route, navigation }) {
                 onSubmit={addOrUpdateHandler}
                 cancelHandler={cancelHandler}
                 defaultValues={selectedCourse} />
+
             {isEditing && (
                 <View style={styles.deleteContainer}>
                     <EvilIcons name="trash" size={36} color="black" onPress={deleteCourse} />

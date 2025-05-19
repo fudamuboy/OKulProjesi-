@@ -5,3 +5,4 @@ export function getFormattedDate(date) {
 export function getLastWeek(date, days) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate() - days)
 }
+

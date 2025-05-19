@@ -8,8 +8,8 @@ import { CoursesContext } from '../store/coursesContext'
 export default function AllCourses() {
     const coursesContext = useContext(CoursesContext)
     return (
-        <Courses courses={coursesContext.courses} coursePeriod="Tumunu yani Hepsini "
-            nullText="Herhangi bi kursa kayitli degilsiniz" />
+        <Courses courses={coursesContext.courses} coursePeriod="Tum kayitlariniz "
+            nullText="Herhangi bi kayit  yapmadiniz" />
     )
 }
 
