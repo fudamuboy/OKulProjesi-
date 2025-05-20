@@ -8,11 +8,12 @@ import CoursForm from '../components/CoursForm';
 import { deleteCourseHttp, storeCourse, updateCourseHttp } from '../helper/http';
 import { usePreventRemove } from '@react-navigation/native';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorText from '../components/ErrorText';
 
 export default function YonetCourses({ route, navigation }) {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const coursesContext = useContext(CoursesContext)
-
+    const [error, setError] = useState()
     const coursId = route.params?.coursId
 
     let isEditing = false
@@ -57,10 +58,19 @@ export default function YonetCourses({ route, navigation }) {
         //     ]
         // )
         setIsSubmitting(true)
-        coursesContext.deleteCourse(coursId)
-        Alert.alert("Başarılı", "Kayıt silindi")
-        navigation.goBack()
-        await deleteCourseHttp(coursId)
+        setError(null)
+        try {
+            coursesContext.deleteCourse(coursId)
+            navigation.goBack()
+            await deleteCourseHttp(coursId)
+        } catch (error) {
+            setError('Kurslar silemedik')
+            setIsSubmitting(false)
+        }
+
+    }
+    if (error && !isSubmitting) {
+        return <ErrorText message={error} />
     }
     function cancelHandler() {
         navigation.goBack()
@@ -68,17 +78,24 @@ export default function YonetCourses({ route, navigation }) {
 
     async function addOrUpdateHandler(courseData) {
         setIsSubmitting(true)
-        if (isEditing) {
-            coursesContext.updateCourse(coursId, courseData)
-            await updateCourseHttp(coursId, courseData)
+        setError(null)
+        try {
+            if (isEditing) {
+                coursesContext.updateCourse(coursId, courseData)
+                await updateCourseHttp(coursId, courseData)
+            } else {
+                const id = await storeCourse(courseData)
+                coursesContext.addCourse({ ...courseData, id: id })
+            }
+            navigation.goBack()
+        } catch (error) {
 
+            setError('Eklemede ve guncellemede bi hata var')
+
+            setIsSubmitting(false)
         }
-        else {
-            const id = await storeCourse(courseData)
-            coursesContext.addCourse({ ...courseData, id: id })
-        }
-        navigation.goBack()
     }
+
     if (isSubmitting) {
         return <LoadingSpinner />
     }

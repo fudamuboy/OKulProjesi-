@@ -6,24 +6,39 @@ import { getLastWeek } from '../helper/date'
 import { useContext } from 'react'
 import { getCourse } from '../helper/http'
 import LoadingSpinner from '../components/LoadingSpinner'
+import ErrorText from '../components/ErrorText'
 
 export default function YakinCourses() {
     const coursesContext = useContext(CoursesContext)
 
     const [fetchedCourses, setFetchedCourses] = useState([])
     const [isfetching, setIsfetching] = useState(true)
+    const [error, setError] = useState()
 
     useEffect(() => {
+
         async function takeCourses() {
+            setError(null)
             setIsfetching(true)
-            const course = await getCourse()
-            coursesContext.setCourse(course)
+            try {
+
+                const course = await getCourse()
+                coursesContext.setCourse(course)
+            } catch (error) {
+                setError('Kurslari cekemedik ')
+            }
+
             // setFetchedCourses(course)
             setIsfetching(false)
         }
 
         takeCourses()
     }, [])
+
+    if (error && !isfetching) {
+        <ErrorText message={error} />
+    }
+
     if (isfetching) {
         return <LoadingSpinner />
     }
